@@ -12,12 +12,14 @@ type Sleeper interface {
 	Sleep()
 }
 
-// DefaultSleeper for when we want to run this thing
-type DefaultSleeper struct{}
+// A ConfigurableSleeper is a Sleeper which can be configured as we go
+type ConfigurableSleeper struct {
+	duration time.Duration
+	sleep    func(time.Duration)
+}
 
-// Sleep calls time.Sleep
-func (d *DefaultSleeper) Sleep() {
-	time.Sleep(1 * time.Second)
+func (c ConfigurableSleeper) Sleep() {
+	c.sleep(c.duration)
 }
 
 // Countdown from 3 to 1, print Go! and sleep 1 second between each print
@@ -35,6 +37,6 @@ func Countdown(writer io.Writer, sleeper Sleeper) {
 }
 
 func main() {
-	sleeper := &DefaultSleeper{}
+	sleeper := &ConfigurableSleeper{1 * time.Second, time.Sleep}
 	Countdown(os.Stdout, sleeper)
 }
